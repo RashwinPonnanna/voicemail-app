@@ -1,0 +1,10 @@
+Flask==3.0.3
+Flask-SocketIO==5.3.6
+Flask-SQLAlchemy==3.1.1
+Flask-Bcrypt==1.0.1
+gevent==24.2.1
+gevent-websocket==0.10.1
+SQLAlchemy==2.0.36
+gunicorn==22.0.0
+python-engineio==4.9.1
+python-socketio==5.11.3

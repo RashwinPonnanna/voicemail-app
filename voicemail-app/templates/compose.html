@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}Compose – VoiceMail{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h2><i class="fas fa-pen"></i> Compose Email</h2>
+  <a href="{{ url_for('inbox') }}" class="btn-secondary"><i class="fas fa-arrow-left"></i> Back</a>
+</div>
+
+<div class="compose-card">
+  <form method="POST" class="compose-form">
+    <div class="form-group">
+      <label><i class="fas fa-user"></i> To (username or email)</label>
+      <input type="text" name="to" value="{{ to or '' }}" placeholder="Recipient username or email" required autocomplete="off" id="to-input"/>
+      <ul id="user-suggestions" class="suggestions hidden"></ul>
+    </div>
+    <div class="form-group">
+      <label><i class="fas fa-tag"></i> Subject</label>
+      <input type="text" name="subject" value="{{ subject or '' }}" placeholder="Email subject" required/>
+    </div>
+    <div class="form-group">
+      <label><i class="fas fa-align-left"></i> Message</label>
+      <textarea name="body" rows="10" placeholder="Write your message here…" required>{{ body or '' }}</textarea>
+    </div>
+    <div class="compose-actions">
+      <button type="submit" class="btn-primary">
+        <i class="fas fa-paper-plane"></i> Send Email
+      </button>
+      <a href="{{ url_for('inbox') }}" class="btn-secondary">Cancel</a>
+    </div>
+  </form>
+</div>
+
+<script>
+const toInput = document.getElementById('to-input');
+const suggestions = document.getElementById('user-suggestions');
+
+toInput.addEventListener('input', async () => {
+  const val = toInput.value.trim();
+  if (val.length < 1) { suggestions.classList.add('hidden'); return; }
+  const res = await fetch('/users');
+  const users = await res.json();
+  const filtered = users.filter(u =>
+    u.username.toLowerCase().includes(val.toLowerCase())
+  );
+  if (filtered.length === 0) { suggestions.classList.add('hidden'); return; }
+  suggestions.innerHTML = filtered.map(u =>
+    `<li onclick="selectUser('${u.username}')">${u.username}</li>`
+  ).join('');
+  suggestions.classList.remove('hidden');
+});
+
+function selectUser(name) {
+  toInput.value = name;
+  suggestions.classList.add('hidden');
+}
+
+document.addEventListener('click', e => {
+  if (!e.target.closest('#to-input')) suggestions.classList.add('hidden');
+});
+</script>
+{% endblock %}

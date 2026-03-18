@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}{{ email.subject }} – VoiceMail{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h2><i class="fas fa-envelope-open"></i> View Email</h2>
+  <a href="{{ url_for('inbox') }}" class="btn-secondary"><i class="fas fa-arrow-left"></i> Back</a>
+</div>
+
+<div class="email-view-card">
+  <div class="email-view-header">
+    <div class="email-view-subject">{{ email.subject }}</div>
+    <div class="email-view-meta">
+      <span><i class="fas fa-user"></i> From: <strong>{{ email.sender.username }}</strong></span>
+      <span><i class="fas fa-arrow-right"></i> To: <strong>{{ email.receiver.username }}</strong></span>
+      <span><i class="fas fa-clock"></i> {{ email.timestamp.strftime('%B %d, %Y at %H:%M') }}</span>
+    </div>
+  </div>
+
+  <div class="email-view-body">{{ email.body }}</div>
+
+  <div class="email-view-actions">
+    {% if email.receiver_id == session.user_id %}
+    <a href="{{ url_for('compose') }}?to={{ email.sender.username }}" class="btn-primary">
+      <i class="fas fa-reply"></i> Reply
+    </a>
+    {% endif %}
+    <button class="btn-call" onclick="callUser('{{ email.sender.username if email.receiver_id == session.user_id else email.receiver.username }}')">
+      <i class="fas fa-phone"></i> Voice Call
+    </button>
+    <form method="POST" action="{{ url_for('delete_email', email_id=email.id) }}" style="display:inline">
+      <button class="btn-danger" onclick="return confirm('Delete this email?')">
+        <i class="fas fa-trash"></i> Delete
+      </button>
+    </form>
+  </div>
+</div>
+
+<script>
+function callUser(username) {
+  openCallPanel();
+  setTimeout(() => initiateCall(username), 300);
+}
+</script>
+{% endblock %}

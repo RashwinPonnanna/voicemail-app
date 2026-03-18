@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Sent – VoiceMail{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h2><i class="fas fa-paper-plane"></i> Sent</h2>
+  <a href="{{ url_for('compose') }}" class="btn-primary"><i class="fas fa-pen"></i> Compose</a>
+</div>
+
+{% if emails %}
+<div class="email-list">
+  {% for email in emails %}
+  <div class="email-item">
+    <a href="{{ url_for('view_email', email_id=email.id) }}" class="email-link">
+      <div class="email-from">
+        <i class="fas fa-user-circle"></i>
+        <strong>To: {{ email.receiver.username }}</strong>
+      </div>
+      <div class="email-subject">{{ email.subject }}</div>
+      <div class="email-preview">{{ email.body[:80] }}{% if email.body|length > 80 %}…{% endif %}</div>
+    </a>
+    <div class="email-meta">
+      <span class="email-time"><i class="fas fa-clock"></i> {{ email.timestamp.strftime('%b %d, %H:%M') }}</span>
+      <form method="POST" action="{{ url_for('delete_email', email_id=email.id) }}" style="display:inline">
+        <button class="btn-icon danger" onclick="return confirm('Delete?')"><i class="fas fa-trash"></i></button>
+      </form>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+  <i class="fas fa-paper-plane"></i>
+  <p>No sent emails yet.</p>
+</div>
+{% endif %}
+{% endblock %}
